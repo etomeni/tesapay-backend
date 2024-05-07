@@ -36,14 +36,10 @@ export default async (req: Request, res: Response, next: NextFunction) => {
         }
     
         if (!decodedToken) {
-            const error = new Error("Not authenticated!");
-            // error.statusCode = 401;
-            error.message = "Not authenticated! unable to verify user authtentication token.";
-    
             return res.status(401).json({
-                message: error.message,
+                message: "Not authenticated! unable to verify user authtentication token.",
+                status: false,
                 statusCode: 401,
-                error
             });
         }
     

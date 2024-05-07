@@ -26,7 +26,7 @@ export type userInterface = {
   country: string,
   phoneNumber: string;
   password: string;
-  pin: number;
+  pin?: number;
   referredBy?: string;
   // referralCode: string;
   account: userAccount[];
@@ -70,7 +70,7 @@ export type userLocationInterface = {
 export type userAccount = {
   currency: string;
   balance: number;
-  accountNumber?: string;
+  accountNumber?: number;
   accountName?: string;
   bank?: string;
   default: boolean;

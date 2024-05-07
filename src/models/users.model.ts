@@ -7,7 +7,7 @@ import { userInterface, userAccount } from './types.js';
 const accountSchema = new Schema<userAccount>({
     currency: String,
     balance: Number,
-    accountNumber: String,
+    accountNumber: Number,
     accountName: String,
     bank: String,
     default: Boolean,
@@ -80,12 +80,12 @@ const userSchema = new Schema<userInterface>(
         phoneNumber: {
             type: String,
             required: [true, "Please enter the user Phone number."],
+            unique: true,
 
-            // unique: true,
-            validate: {
-                validator: (v: string) => validator.isMobilePhone(v),
-                message: ({ value }) => `${value} is not a phone number.`,
-            },
+            // validate: {
+            //     validator: (v: string) => validator.isMobilePhone(v),
+            //     message: ({ value }) => `${value} is not a valid phone number.`,
+            // },
         },
         country: {
             type: String,
@@ -95,7 +95,7 @@ const userSchema = new Schema<userInterface>(
             type: Boolean,
             required: true,
             // enum: [true, false],
-            default: false
+            default: true
         },
 
         password: {

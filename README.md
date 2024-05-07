@@ -11,6 +11,8 @@ HOST_SENDER
 EMAIL_PASSWORD
 ```
 
+# Complete all TODO:: before launching to testing
+
 
 # Working with linux commands
 

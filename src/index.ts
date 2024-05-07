@@ -39,10 +39,6 @@ app.use('/api/v1/uploads', express.static('uploads'));
 app.use(get404);
 app.use(get500);
 
-// app.get('/', (req, res) => {
-//     res.send('Hello From Home page');
-// })
-
 const dbAccess = process.env.MONGO_DB_ACCESS_URI;
 
 if (dbAccess) {
