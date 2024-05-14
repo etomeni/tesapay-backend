@@ -20,12 +20,13 @@ import {
 
     loginController, 
     // updateUserProfileCtr, 
-    // changePasswordCtr,
+    changePasswordCtr,
+    resetPasswordCtr,
+    reValidateUserAuthCtrl,
     sendPasswordResetEmailCtr,
     verifyEmailTokenCtr,
     resendEmailVerificationTokenCtr,
-    resetPasswordCtr,
-    reValidateUserAuthCtrl
+    sendPhoneVerificationTokenCtr
 } from './../controllers/authController.js';
 
 // middleWares
@@ -155,12 +156,12 @@ router.get(
 //     updateUserProfileCtr
 // );
 
-// // change User password
-// router.post(
-//     '/changePassword',
-//     authMiddleware,
-//     changePasswordCtr
-// );
+// change User password
+router.post(
+    '/changePassword',
+    authMiddleware,
+    changePasswordCtr
+);
 
 // send Password Reset Email
 router.post(
@@ -182,6 +183,11 @@ router.post(
 router.post(
     '/resendEmailVerificationToken',
     resendEmailVerificationTokenCtr
+);
+
+router.post(
+    '/sendPhoneVerificationToken',
+    sendPhoneVerificationTokenCtr
 );
 
 // reset password

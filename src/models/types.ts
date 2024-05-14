@@ -44,6 +44,8 @@ export type userInterface = {
   address?: userAddress;
   isAddressVerified?: boolean;
   idImage?: string;
+  isDeleted?: boolean;
+  lastLogin?: string;
   createdAt?: string;
   updatedAt?: string;
 };

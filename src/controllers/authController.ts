@@ -12,6 +12,8 @@ import nodemailer from 'nodemailer';
 // models
 import { userModel } from '../models/users.model.js';
 import { userAccount, userInterface } from "../models/types.js";
+import { maskPhoneNumber, termiSendSmsEndpoint } from "@/util/resources.js";
+import axios from "axios";
 
 
 const secretForToken = process.env.JWT_SECRET;
@@ -286,7 +288,7 @@ export const loginController = async (req: Request, res: Response, next: NextFun
 
         const user = await userModel.findOne({email});
 
-        if (!user?._id) {
+        if (!user?._id || user?.isDeleted) {
             const error = new Error('A user with this username or email could not be found!');
 
             return res.status(401).json({
@@ -423,69 +425,71 @@ export const loginController = async (req: Request, res: Response, next: NextFun
 //     }
 // }
 
-// export const changePasswordCtr = async (req, res, next) => {
-//     try {
-//         const userId = req.body.userId;
-//         const password = req.body.currentPassword;
-//         const newPassword = req.body.newPassword;
+export const changePasswordCtr = async (req: Request, res: Response, next: NextFunction) => {
+    try {
+        // const userId = req.body.userId;
+        const currentPassword = req.body.currentPassword;
+        const newPassword = req.body.newPassword;
+        const confirmNewPassword = req.body.confirmNewPassword;
+        const userDataParam = req.body.middlewareParam;
 
-//         const user = await auth.findByID(userId);
-//         if (user && user.status == false) {
-//             const error = new Error('A user with this ID could not be found!');
-//             error.statusCode = 401;
-//             error.message = "Incorrect user's ID";
+        if (newPassword !== confirmNewPassword) {
+            return res.status(400).json({
+                status: false,
+                statusCode: 400,
+                message: "passwords doesn't match."
+            });
+        }
 
-//             return res.status(401).json({
-//                 error,
-//                 statusCode: error.statusCode,
-//                 msg: error.message
-//             });
-//         };
+        const user = await userModel.findOne({email: userDataParam.email});
+        if (!user?._id) {
+            return res.status(401).json({
+                message: "A user with this ID could not be found!",
+                status: false,
+                statusCode: 401,
+            });
+        };
 
-//         const isPassEqual = await bcryptjs.compare(password, user.password);
-//         if (!isPassEqual) {
-//             const error = new Error('Wrong password!');
-//             error.statusCode = 401;
-//             error.message = 'Wrong password!';
+        const isPassEqual = await bcryptjs.compare(currentPassword, user.password);
+        if (!isPassEqual) {
+            return res.status(400).json({
+                status: false,
+                statusCode: 400,
+                message: "Wrong password!"
+            });
+        }
 
-//             // throw error;
+        const hashedPassword = await bcryptjs.hash(newPassword, 12);
 
-//             return res.status(401).json({
-//                 error,
-//                 statusCode: error.statusCode,
-//                 msg: error.message
-//             });
-//         }
-
-//         const hashedPassword = await bcryptjs.hash(newPassword, 12);
-
-//         const updatedUser = await userModel.findOneAndUpdate(
-//             { userId: user.userId }, 
-//             { password: hashedPassword },
-//             {
-//                 runValidators: true,
-//                 returnOriginal: false,
-//             }
-//         );
+        const updatedUser = await userModel.findOneAndUpdate(
+            { userId: user.userId }, 
+            { password: hashedPassword },
+            // {
+            //     runValidators: true,
+            //     returnOriginal: false,
+            // }
+        );
         
-//         if (updatedUser && updatedUser.status) {
-//             return res.status(500).json({
-//                 status: 500,
-//                 message: 'Ooopps unable to update password.',
-//             });
-//         }
+        if (!updatedUser?._id) {
+            return res.status(500).json({
+                status: false,
+                statusCode: 500,
+                message: 'Ooopps unable to update password.',
+            });
+        }
 
-//         return res.status(201).json({
-//             status: 201,
-//             message: 'Password Changed successfully!',
-//         });
-//     } catch (error) {
-//         if (!error.statusCode) {
-//             error.statusCode = 500;
-//         }
-//         next(error);
-//     }
-// }
+        return res.status(201).json({
+            status: true,
+            statusCode: 201,
+            message: 'Password Changed successfully!',
+        });
+    } catch (error: any) {
+        if (!error.statusCode) {
+            error.statusCode = 500;
+        }
+        next(error);
+    }
+}
 
 export const sendPasswordResetEmailCtr = async (req: Request, res: Response, next: NextFunction) => {
     try {
@@ -574,6 +578,64 @@ export const resendEmailVerificationTokenCtr = async (req: Request, res: Respons
         if (!error.statusCode) {
             error.statusCode = 500;
         }
+        next(error);
+    }
+}
+
+export const sendPhoneVerificationTokenCtr = async (req: Request, res: Response, next: NextFunction) => {
+    try {
+        const phoneNumber = req.body.phoneNumber || "";
+        // const firstName = req.body.firstName || "";
+        // const middleName = req.body.middleName || "";
+        // const lastName = req.body.lastName || "";
+
+        const codeLength = 6;
+        const code = Math.floor(Math.random() * Math.pow(10, codeLength)).toString().padStart(codeLength, '0');
+    
+        const jwt_token = Jwt.sign(
+            { code, phoneNumber },
+            `${code}`,
+            { expiresIn: '30m' }
+        );
+
+        // Remove any non-digit characters from the input
+        const cleanedNumber = phoneNumber.replace(/\D/g, '');
+
+        const msg = `Your TesaPay verification code is: ${code}. \nPlease do not this code with anyone, no staff of TesaPay will ask for this code. `;
+        
+        const msg2send = {
+            // to: cleanedNumber,
+            to: '2347019055569',
+            from: "N-Alert",
+            sms: msg,
+            type: "plain",
+            channel: "dnd",
+            api_key: process.env.TERMII_API_KEY,
+        }
+        const response = (await axios.post(`${termiSendSmsEndpoint}`, msg2send)).data;
+
+        console.log(response);
+
+        if (!response.message_id) {
+            return res.status(500).json({
+                status: false,
+                statusCode: 500,
+                error: response,
+                message: "unabl to send otp code"
+            });
+        }
+
+        return res.status(201).json({
+            status: true,
+            statusCode: 201,
+            messageId: response.message_id,
+            verificationToken: jwt_token,
+            message: `Verification code sent to ${maskPhoneNumber(phoneNumber)}. Enter the code to verify.`,
+        });
+    } catch (err: any) {
+        const error = err.response.data ?? err;
+
+        if (!error.statusCode) error.statusCode = 500;
         next(error);
     }
 }

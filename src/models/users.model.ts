@@ -162,6 +162,15 @@ const userSchema = new Schema<userInterface>(
             type: String,
             required: false
         },
+        isDeleted: {
+            type: Boolean,
+            required: false,
+            default: false
+        },
+        lastLogin: {
+            type: Date,
+            required: false
+        }
     },
     { timestamps: true }
 );
