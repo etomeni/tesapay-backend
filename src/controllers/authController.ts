@@ -585,9 +585,6 @@ export const resendEmailVerificationTokenCtr = async (req: Request, res: Respons
 export const sendPhoneVerificationTokenCtr = async (req: Request, res: Response, next: NextFunction) => {
     try {
         const phoneNumber = req.body.phoneNumber || "";
-        // const firstName = req.body.firstName || "";
-        // const middleName = req.body.middleName || "";
-        // const lastName = req.body.lastName || "";
 
         const codeLength = 6;
         const code = Math.floor(Math.random() * Math.pow(10, codeLength)).toString().padStart(codeLength, '0');
@@ -604,8 +601,8 @@ export const sendPhoneVerificationTokenCtr = async (req: Request, res: Response,
         const msg = `Your TesaPay verification code is: ${code}. \nPlease do not this code with anyone, no staff of TesaPay will ask for this code. `;
         
         const msg2send = {
-            // to: cleanedNumber,
-            to: '2347019055569',
+            to: cleanedNumber,
+            // to: '2347019055569',
             from: "N-Alert",
             sms: msg,
             type: "plain",
@@ -614,7 +611,7 @@ export const sendPhoneVerificationTokenCtr = async (req: Request, res: Response,
         }
         const response = (await axios.post(`${termiSendSmsEndpoint}`, msg2send)).data;
 
-        console.log(response);
+        // console.log(response);
 
         if (!response.message_id) {
             return res.status(500).json({
@@ -636,6 +633,63 @@ export const sendPhoneVerificationTokenCtr = async (req: Request, res: Response,
         const error = err.response.data ?? err;
 
         if (!error.statusCode) error.statusCode = 500;
+        next(error);
+    }
+}
+
+export const verifyPhoneTokenCtr = async (req: Request, res: Response, next: NextFunction) => {
+    try {
+        const code = req.body.code;
+        // const token = req.body.token;
+        const authHeader = req.get('Authorization');
+    
+        if (!authHeader) {
+            const error = new Error("Not authenticated!");
+    
+            return res.status(401).json({
+                message: "No authentication token, Please try again.",
+                status: false,
+                statusCode: 401,
+                error
+            });
+        };
+        const token = authHeader.split(' ')[1];
+
+        const verifyRes =  verifyEmailToken(code, token);
+        
+        if (!verifyRes.status) {
+            return res.status(401).json({
+                statusCode: 401,
+                status: false,
+                message: 'wrong Verification Code!',
+            });
+        }
+
+        const uzer = await userModel.findOneAndUpdate(
+            { phoneNumber: verifyRes.decodedToken.phoneNumber }, // Query to find the user
+            { $set: { isPhoneNumberVerified: true } }, // Update the field
+            // { new: true, upsert: true } // Options: return the updated doc and create if not found
+        );
+        
+        if (!uzer) {
+            return res.status(500).json({
+                status: false,
+                statusCode: 500,
+                message: 'server error. unable to update verification status.',
+            });
+        }
+
+        return res.status(201).json({
+            statusCode: 201,
+            status: true,
+            decodedToken: verifyRes.decodedToken,
+            message: 'Phone number verified!',
+        });
+    } catch (error: any) {
+        if (!error.statusCode) {
+            error.statusCode = 500;
+            error.message = 'server error!';
+        }
         next(error);
     }
 }

@@ -25,6 +25,7 @@ import {
     reValidateUserAuthCtrl,
     sendPasswordResetEmailCtr,
     verifyEmailTokenCtr,
+    verifyPhoneTokenCtr,
     resendEmailVerificationTokenCtr,
     sendPhoneVerificationTokenCtr
 } from './../controllers/authController.js';
@@ -178,6 +179,11 @@ router.post(
 router.post(
     '/verifyEmailToken',
     verifyEmailTokenCtr
+);
+
+router.post(
+    '/verifyPhoneToken',
+    verifyPhoneTokenCtr
 );
 
 router.post(
