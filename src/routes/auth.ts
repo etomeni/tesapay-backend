@@ -81,7 +81,7 @@ router.post(
         .custom(async (phoneNumber) => {
             try {
                 const userExist = await userModel.findOne({ phoneNumber });
-
+                
                 if (userExist) {
                     return Promise.reject('Phone number already exist!');
                 }
@@ -116,17 +116,17 @@ router.post(
     verifyUserExist
 );
 
-router.post(
+router.get(
     "/verifyEmail",
     verifyEmailExist
 );
 
-router.post(
+router.get(
     "/verifyUsername",
     verifyUsernameExist
 );
 
-router.post(
+router.get(
     "/verifyPhoneNumber",
     verifyPhoneNumberExist
 );

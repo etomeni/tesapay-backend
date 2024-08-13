@@ -26,10 +26,10 @@ export type userInterface = {
   country: string,
   phoneNumber: string;
   password: string;
-  pin?: number;
+  pin?: string;
   referredBy?: string;
   // referralCode: string;
-  account: userAccount[];
+  // account: userAccount[];
   // tnc: boolean;
   status: boolean;
 
@@ -39,7 +39,7 @@ export type userInterface = {
   isPhoneNumberVerified?: boolean;
   NIN?: number;
   isNINverified?: boolean;
-  BVN?: number;
+  BVN?: bvnInterface;
   isBVNverified?: boolean;
   address?: userAddress;
   isAddressVerified?: boolean;
@@ -48,6 +48,62 @@ export type userInterface = {
   lastLogin?: string;
   createdAt?: string;
   updatedAt?: string;
+};
+
+
+
+export type accountInterface = {
+  userId: string,
+  userEmail: string,
+  // transactionTrackingRef: "tesapay/waas/66a52e3ba0efbcdba1514ecf",
+  lastName: string,
+  otherNames: string,
+  // accountName: "Kathryn Kuhlm",
+  phoneNo: string,
+  gender: number,
+  dateOfBirth: string,
+  email: string,
+  bvn: string, 
+  // customerID: "66a52e3ba0efbcdba1514ecf",
+  walletType: string,
+  
+  accountNumber: string,
+  customerID: string,
+  accountName: string,
+  accountRef: string,
+  status: string, // "InActive" || "SUSPENDED"
+
+  tier: string,
+  
+  ngn: {
+    availableBalance: number,
+    number: string,
+    pndstatus: string,
+    name: string,
+    productCode: string,
+    lienStatus: string,
+    freezeStatus: string,
+    ledgerBalance: number,
+    maximumBalance: number,
+    nuban: string,
+    provider: string
+  },
+
+  otherCurrencies?: object,
+
+  createdAt?: string;
+  updatedAt?: string;
+};
+
+type bvnInterface = {
+  firstName: string;
+  middleName: string;
+  lastName: string;
+  dateOfBirth: string;
+  phoneNumber: string;
+
+  number: string,
+  isBvnPhoneVerified: boolean
 };
 
 type userAddress = {
@@ -69,14 +125,14 @@ export type userLocationInterface = {
   lon: number;
 };
 
-export type userAccount = {
-  currency: string;
-  balance: number;
-  accountNumber?: number;
-  accountName?: string;
-  bank?: string;
-  default: boolean;
-};
+// export type userAccount = {
+//   currency: string;
+//   balance: number;
+//   accountNumber?: number;
+//   accountName?: string;
+//   bank?: string;
+//   default: boolean;
+// };
 
 
 

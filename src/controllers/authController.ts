@@ -11,7 +11,7 @@ import nodemailer from 'nodemailer';
 
 // models
 import { userModel } from '../models/users.model.js';
-import { userAccount, userInterface } from "../models/types.js";
+import { userInterface } from "../models/types.js";
 import { maskPhoneNumber, termiSendSmsEndpoint } from "@/util/resources.js";
 import axios from "axios";
 
@@ -21,10 +21,11 @@ const secretForToken = process.env.JWT_SECRET;
 export const signupController = async (req: Request, res: Response, next: NextFunction) => {
     try {
         const errors = validationResult(req);
-
+        
         if (!errors.isEmpty()) {
-            return res.status(209).json({
-                status: 209,
+            return res.status(401).json({
+                status: false,
+                statusCode: 401,
                 message: 'Form Validation Error!', 
                 ...errors
             });
@@ -45,17 +46,16 @@ export const signupController = async (req: Request, res: Response, next: NextFu
                 message: 'Must accept terms and conditions before proceeding.'
             });
         }
+
+        const getLast10Chars = (str: string) => {
+            // Handle short strings
+            if (str.length <= 10) return str;
+            // Extract the last 10 characters
+            return str.slice(-10);
+        }
+          
         
         const hashedPassword = await bcryptjs.hash(req.body.password, 12);
-
-        const getAccountDetails: userAccount = {
-            currency: "NGN",
-            balance: 0,
-            accountNumber: 8108786933,
-            accountName: "Sunday Etom Eni",
-            bank: "TesaPay",
-            default: true
-        };
 
         const userDetails: userInterface = {
             userId: await uuidv4(),
@@ -71,14 +71,14 @@ export const signupController = async (req: Request, res: Response, next: NextFu
             phoneNumber: req.body.phoneNumber,
             country: req.body.country,
             password: hashedPassword,
-            account: [getAccountDetails],
+            // account: [getAccountDetails],
             status: true,
             location: req.body.location,
             referredBy: req.body.referredBy,
 
-            pin: 0,
-            NIN: 0,
-            BVN: 0,
+            // pin: 0,
+            // NIN: 0,
+            // BVN: {},
             idImage: '',
             isAddressVerified: false,
             isBVNverified: false,
@@ -94,6 +94,7 @@ export const signupController = async (req: Request, res: Response, next: NextFu
             }
 
         };
+        
         const newUser = new userModel(userDetails);
         const result = await newUser.save();
 
@@ -109,14 +110,12 @@ export const signupController = async (req: Request, res: Response, next: NextFu
                 });
             }
             
-
-            // 
-
             const token = Jwt.sign(
                 {
                     username: userDetails.username,
                     email: userDetails.email,
-                    userId: userDetails.userId
+                    userId: userDetails.userId,
+                    _id: result._id
                 },
                 `${secretForToken}`,
                 { expiresIn: '7d' }
@@ -184,7 +183,7 @@ export const verifyUserExist = async (req: Request, res: Response, next: NextFun
 
 export const verifyUsernameExist = async (req: Request, res: Response, next: NextFunction) => {
     try {
-        const username = req.body.username;
+        const username = req.query.username;
         const userExist = await userModel.findOne({username});
 
         if (userExist) {
@@ -211,7 +210,8 @@ export const verifyUsernameExist = async (req: Request, res: Response, next: Nex
 
 export const verifyEmailExist = async (req: Request, res: Response, next: NextFunction) => {
     try {
-        const email = req.body.email;
+        const email = req.query.email;
+        // const userDele = await userModel.deleteOne({ email });
         const userExist = await userModel.findOne({ email });
 
         if (userExist) {
@@ -237,7 +237,7 @@ export const verifyEmailExist = async (req: Request, res: Response, next: NextFu
 
 export const verifyPhoneNumberExist = async (req: Request, res: Response, next: NextFunction) => {
     try {
-        const phoneNumber = req.body.phoneNumber;
+        const phoneNumber = req.query.phoneNumber;
         const userExist = await userModel.findOne({ phoneNumber });
 
         if (userExist) {
@@ -320,7 +320,8 @@ export const loginController = async (req: Request, res: Response, next: NextFun
             {
                 username: user.username,
                 email: user.email,
-                userId: user.userId
+                userId: user.userId,
+                _id: user._id
             },
             `${secretForToken}`,
             { expiresIn: '7d' }
@@ -514,6 +515,9 @@ export const sendPasswordResetEmailCtr = async (req: Request, res: Response, nex
         const email = req.body.email;
         const uzer = await userModel.findOne({email});
 
+        console.log(uzer);
+        
+
         if (!uzer?.email) {
             return res.status(400).json({
                 status: false,
@@ -584,7 +588,7 @@ export const resendEmailVerificationTokenCtr = async (req: Request, res: Respons
 
 export const sendPhoneVerificationTokenCtr = async (req: Request, res: Response, next: NextFunction) => {
     try {
-        const phoneNumber = req.body.phoneNumber || "";
+        const phoneNumber = req.body.phoneNumber;
 
         const codeLength = 6;
         const code = Math.floor(Math.random() * Math.pow(10, codeLength)).toString().padStart(codeLength, '0');
@@ -697,6 +701,7 @@ export const verifyPhoneTokenCtr = async (req: Request, res: Response, next: Nex
 export const verifyEmailTokenCtr = async (req: Request, res: Response, next: NextFunction) => {
     try {
         const code = req.body.code;
+        
         // const email = req.body.email;
         // const token = req.body.token;
         const authHeader = req.get('Authorization');
@@ -774,6 +779,8 @@ export const setPinCtr = async (req: Request, res: Response, next: NextFunction)
             });
         };
 
+        // TODO::: validate the authentication header
+
         // console.log(verifyRes);
 
         const uzer = await userModel.findOneAndUpdate(
@@ -785,7 +792,7 @@ export const setPinCtr = async (req: Request, res: Response, next: NextFunction)
             return res.status(500).json({
                 status: false,
                 statusCode: 500,
-                message: 'server error. unable to set pin.',
+                message: 'user with this email does not exist',
             });
         }
 
@@ -810,7 +817,8 @@ export const resetPasswordCtr = async (req: Request, res: Response, next: NextFu
         const error = validationResult(req);
         if (!error.isEmpty()) {
             return res.status(400).json({
-                status: 400,
+                statusCode: 400,
+                status: false,
                 message: 'password Error!',
                 error
             });
@@ -819,6 +827,7 @@ export const resetPasswordCtr = async (req: Request, res: Response, next: NextFu
         if (!error.statusCode) {
             error.statusCode = 500;
         }
+        error.status = false;
         error.message = "sent data validation error";
         next(error);
     }

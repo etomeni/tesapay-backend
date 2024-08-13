@@ -1,17 +1,8 @@
 // import mongoose, { model, Schema, SchemaTypes,  } from 'mongoose';
 import mongoose, { Schema } from 'mongoose';
 import validator from 'validator';
-import { userInterface, userAccount } from './types.js';
+import { userInterface } from './types.js';
 
-
-const accountSchema = new Schema<userAccount>({
-    currency: String,
-    balance: Number,
-    accountNumber: Number,
-    accountName: String,
-    bank: String,
-    default: Boolean,
-});
 
 const addressSchema = new Schema({
     ip: String,
@@ -32,7 +23,6 @@ const locationSchema = new Schema({
     lat: Number,
     lon: Number,
 });
-
 
 
 const userSchema = new Schema<userInterface>(
@@ -118,16 +108,16 @@ const userSchema = new Schema<userInterface>(
             type: Number,
             required: false
         },
-        account: {
-            type: [accountSchema],
-            required: false
-        },
+        // account: {
+        //     type: [accountSchema],
+        //     required: false
+        // },
         NIN: {
-            type: Number,
+            type: Object,
             required: false
         },
         BVN: {
-            type: Number,
+            type: Object,
             required: false
         },
         address: {

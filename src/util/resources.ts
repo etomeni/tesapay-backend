@@ -1,4 +1,22 @@
 export const termiSendSmsEndpoint = "https://api.ng.termii.com/api/sms/send";
+export const premblyIdentityEndpoint = " https://api.prembly.com";
+
+
+export const psbEndpoint = " http://102.216.128.75:9090";
+export const psbVasEndpoint = " http://102.216.128.75:9090/vas/api/v1";
+export const psbWaasEndpoint = " http://102.216.128.75:9090/waas/api/v1";
+
+
+export function getSampleNetworkNumber(network: string) {
+    if (network == 'MTN') return '08031000300';
+
+    if (network == 'AIRTEL') return '08021500300';
+
+    if (network == '9MOBILE') return '08090000300';
+
+    if (network == 'GLO') return '08055575910';
+    return ''
+}
 
 export function maskPhoneNumber(phoneNumber: string) {
     // Remove any non-digit characters from the input

@@ -30,6 +30,7 @@ export default async (req: Request, res: Response, next: NextFunction) => {
     
             return res.status(500).json({
                 message: error.message,
+                status: false,
                 statusCode: error.statusCode,
                 error
             });
@@ -48,7 +49,8 @@ export default async (req: Request, res: Response, next: NextFunction) => {
             isLoggedin: true,
             userId: decodedToken.userId,
             email: decodedToken.email,
-            username: decodedToken.username
+            username: decodedToken.username,
+            _id: decodedToken._id
         };
         // req.isLoggedin = true;
         // req.userId = decodedToken.userId;
