@@ -14,7 +14,11 @@ import { getVasAuthToken } from '@/middleware/psbAuth.js';
 import { 
     getDataPlansCtrl,
     dataPlanTopupCtrl,
-    airtimeTopupCtrl
+    airtimeTopupCtrl,
+    getElectricBillersCtrl,
+    getBillerFieldsCtrl,
+    validateBillPaymentCtrl,
+    initiateBillsPaymentCtrl
 } from '../controllers/vasController.js';
 
 
@@ -46,6 +50,42 @@ router.post(
         getVasAuthToken
     ],
     airtimeTopupCtrl
+);
+
+router.get(
+    "/getElectricBillers",
+    [
+        authMiddleware,
+        getVasAuthToken
+    ],
+    getElectricBillersCtrl
+);
+
+router.get(
+    "/getBillerFields/:billerId",
+    [
+        authMiddleware,
+        getVasAuthToken
+    ],
+    getBillerFieldsCtrl
+);
+
+router.post(
+    "/validateBillPayment",
+    [
+        authMiddleware,
+        getVasAuthToken
+    ],
+    validateBillPaymentCtrl
+);
+
+router.post(
+    "/initiateBillsPayment",
+    [
+        authMiddleware,
+        getVasAuthToken
+    ],
+    initiateBillsPaymentCtrl
 );
 
 

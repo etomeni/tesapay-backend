@@ -9,6 +9,7 @@ import { userModel } from '../models/users.model.js';
 import { accountModel } from '../models/accounts.model.js';
 import { psbWaasEndpoint } from "@/util/resources.js";
 import { accountInterface } from "@/models/types.js";
+import { transactionModel } from "@/models/transactions.model.js";
 
 
 // const secretForToken = process.env.JWT_SECRET;
@@ -201,6 +202,58 @@ export const getWalletDetailsCtrl = async (req: Request, res: Response, next: Ne
             message: response.message || 'unable to get user account record.',
         });
         
+    } catch (error: any) {
+        if (!error.statusCode) {
+            error.statusCode = 500;
+        }
+        next(error);
+    }
+}
+
+export const getTranactionsCtrl = async (req: Request, res: Response, next: NextFunction) => {
+    try {
+        const page = Number(req.query.page);
+        const limit = Number(req.query.limit);
+
+        // const user_email = req.body.middlewareParam.email;
+        // const userId = req.body.middlewareParam.userId;
+        const _id = req.body.middlewareParam._id;
+
+        // Calculate the number of documents to skip
+        const skip = (page - 1) * limit;
+
+        // Fetch paginated data from the database
+        const transactionDetails = await transactionModel.find({ user_id: _id })
+        .sort({ createdAt: -1 })  // Sort by createdAt in descending order
+        .skip(skip) // Skip the number of documents
+        .limit(limit); // Limit the number of results
+        if (!transactionDetails) {
+            return res.status(500).json({
+                status: false,
+                statusCode: 500,
+                message: "unable to resolve user transaction record."
+            });
+        };
+
+        // Get the total number of documents
+        const totalDocuments = await transactionModel.countDocuments();
+
+        // Calculate total pages
+        const totalPages = Math.ceil(totalDocuments / limit);
+
+        
+        return res.status(201).json({
+            status: true,
+            statusCode: 201,
+            result: {
+                transactionDetails,
+                page,
+                totalPages,
+                totalDocuments
+            },
+            message: 'Successfull'
+        });
+
     } catch (error: any) {
         if (!error.statusCode) {
             error.statusCode = 500;

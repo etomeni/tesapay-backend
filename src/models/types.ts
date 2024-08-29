@@ -170,6 +170,74 @@ export interface IpApiResponse {
 }
 
 
+export interface transactionsInterface {
+  _id?: string,
+  user_id: string,
+  userEmail: string,
+  category: "VAS" | "WAAS",
+  type: "credit" | "debit" | "airtime" | "data" | "electricity" | "Betting" | "TV" | "Exams" | "Internet",
+
+  data: electricityTransactionInterface | airtimeTransactionInterface | 
+        dataTransactionInterface | creditTransactionInterface,
+
+
+  accountNo: string,
+  amount: string,
+  transactionReference: string,
+  status: string,
+
+  createdAt?: string;
+  updatedAt?: string;
+}
+
+export interface creditTransactionInterface {
+  accountNo: string,
+  // totalAmount: number,
+  transactionId: string,
+  narration: string,
+  merchantFeeAccount?: string,
+  merchantFeeAmount?: string,
+  transactionType: string,
+
+  // this is for the result of the transaction
+  reference?: string,
+}
+
+export interface dataTransactionInterface {
+  phoneNumber: string,
+  network: string,
+  productId: string,
+
+  // this is for the result of the transaction
+  dataPlan: string
+  reference: string
+}
+
+export interface airtimeTransactionInterface {
+  phoneNumber: string,
+  network: string,
+  // this is for the result of the transaction
+  reference: string
+}
+
+export interface electricityTransactionInterface {
+  customerId: string;
+  // meterNumber: string,
+  billerName: string, 
+  billerId: string,
+  itemId: string, 
+
+  customerPhone: string, 
+  customerName: string, 
+  address: string,
+  units: string,
+  token: string,
+  isToken: string,
+  reference?: string
+}
+
+
+
 export enum conditionType {
   "!=" = "!=",
   "<" = "<",

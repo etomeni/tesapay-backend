@@ -12,6 +12,8 @@ EMAIL_PASSWORD
 ```
 
 # Complete all TODO:: before launching to testing
+<!-- write a function that always check the status of transactions that are 
+successful nor failed -->
 
 
 # Working with linux commands

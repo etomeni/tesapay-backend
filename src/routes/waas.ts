@@ -11,7 +11,8 @@ import { getWaasAuthToken } from '@/middleware/psbAuth.js';
 // Controllers
 import { 
     openWalletCtrl,
-    getWalletDetailsCtrl
+    getWalletDetailsCtrl,
+    getTranactionsCtrl
 } from '../controllers/waasController.js';
 
 const router = express.Router();
@@ -35,6 +36,15 @@ router.get(
         getWaasAuthToken
     ],
     getWalletDetailsCtrl
+);
+
+router.get(
+    "/getTranactionHistory",
+    [
+        authMiddleware,
+        getWaasAuthToken
+    ],
+    getTranactionsCtrl
 );
 
 export default router;

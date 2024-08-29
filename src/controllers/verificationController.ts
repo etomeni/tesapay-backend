@@ -11,7 +11,7 @@ import nodemailer from 'nodemailer';
 
 // models
 import { userModel } from '../models/users.model.js';
-import { userAccount, userInterface } from "../models/types.js";
+// import { userAccount, userInterface } from "../models/types.js";
 import { maskPhoneNumber, premblyIdentityEndpoint, termiSendSmsEndpoint } from "@/util/resources.js";
 import axios from "axios";
 

@@ -602,7 +602,7 @@ export const sendPhoneVerificationTokenCtr = async (req: Request, res: Response,
         // Remove any non-digit characters from the input
         const cleanedNumber = phoneNumber.replace(/\D/g, '');
 
-        const msg = `Your TesaPay verification code is: ${code}. \nPlease do not this code with anyone, no staff of TesaPay will ask for this code. `;
+        const msg = `Your TesaPay verification code is: ${code}. \nPlease do not share this code with anyone, no staff of TesaPay will ask for this code. `;
         
         const msg2send = {
             to: cleanedNumber,
