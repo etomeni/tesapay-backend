@@ -23,14 +23,22 @@ const transactionSchema = new Schema<transactionsInterface>(
             required: true,
         },
 
-        waas: {
+        data: {
             type: Object,
-            required: false,
+            required: true,
         },
-
-        vas: {
-            type: Object,
-            required: false,
+        
+        accountNo: {
+            type: String,
+            required: true,
+        },
+        amount: {
+            type: Number,
+            required: true,
+        },
+        transactionReference: {
+            type: String,
+            required: true,
         },
 
         status: {

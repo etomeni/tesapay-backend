@@ -15,10 +15,11 @@ import {
     getDataPlansCtrl,
     dataPlanTopupCtrl,
     airtimeTopupCtrl,
-    getElectricBillersCtrl,
+    getBillersCtrl,
     getBillerFieldsCtrl,
     validateBillPaymentCtrl,
-    initiateBillsPaymentCtrl
+    initiateBillsPaymentCtrl,
+    // getBetBillersCtrl
 } from '../controllers/vasController.js';
 
 
@@ -43,6 +44,7 @@ router.post(
     dataPlanTopupCtrl
 );
 
+// airtimeTopup
 router.post(
     "/airtimeTopup",
     [
@@ -52,15 +54,17 @@ router.post(
     airtimeTopupCtrl
 );
 
+// getBettingBillers
 router.get(
-    "/getElectricBillers",
+    "/getBillers",
     [
         authMiddleware,
         getVasAuthToken
     ],
-    getElectricBillersCtrl
+    getBillersCtrl
 );
 
+// getBillerFields/:billerId
 router.get(
     "/getBillerFields/:billerId",
     [
@@ -70,6 +74,7 @@ router.get(
     getBillerFieldsCtrl
 );
 
+// validateBillPayment
 router.post(
     "/validateBillPayment",
     [
@@ -79,6 +84,7 @@ router.post(
     validateBillPaymentCtrl
 );
 
+// initiateBillsPayment
 router.post(
     "/initiateBillsPayment",
     [

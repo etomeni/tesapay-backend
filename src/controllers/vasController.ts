@@ -13,7 +13,7 @@ import nodemailer from 'nodemailer';
 import { userModel } from '../models/users.model.js';
 import { getSampleNetworkNumber, psbVasEndpoint } from "@/util/resources.js";
 import axios from "axios";
-import { transactionsInterface } from "@/models/types.js";
+import { transactionsInterface, vasBillsTransactionInterface } from "@/models/types.js";
 import { transactionModel } from "@/models/transactions.model.js";
 
 
@@ -109,7 +109,7 @@ export const dataPlanTopupCtrl = async (req: Request, res: Response, next: NextF
             }
         )).data;
 
-        // console.log(response); 
+        // console.log(response);
 
         const statusResponse = await getTopupTransactionStatus(transactionReference, accessToken);
 
@@ -119,11 +119,13 @@ export const dataPlanTopupCtrl = async (req: Request, res: Response, next: NextF
             category: "VAS",
             type: "data",
             data: {
-                phoneNumber: phoneNumber,
-                network: network,
-                productId: productId,
-                dataPlan: response.data && response.responseCode == "200" ? response.data.dataPlan : productId,
-                reference: response.data && response.responseCode == "200" ? response.data.transactionReference : '',
+                topup: {
+                    phoneNumber: phoneNumber,
+                    network: network,
+                    productId: productId,
+                    dataPlan: response.data && response.responseCode == "200" ? response.data.dataPlan : productId,
+                    reference: response.data && response.responseCode == "200" ? response.data.transactionReference : '',
+                }
             },
             accountNo: debitAccount,
             amount: amount,
@@ -157,6 +159,8 @@ export const dataPlanTopupCtrl = async (req: Request, res: Response, next: NextF
         });
         
     } catch (error: any) {
+        console.log(error);
+        
         if (!error.statusCode) {
             error.statusCode = 500;
         }
@@ -208,9 +212,11 @@ export const airtimeTopupCtrl = async (req: Request, res: Response, next: NextFu
             category: "VAS",
             type: "airtime",
             data: {
-                phoneNumber: phoneNumber,
-                network: network,
-                reference: response.data && response.responseCode == "200" ? response.data.transactionReference : '',
+                topup: {
+                    phoneNumber: phoneNumber,
+                    network: network,
+                    reference: response.data && response.responseCode == "200" ? response.data.transactionReference : '',
+                }
             },
             accountNo: debitAccount,
             amount: amount,
@@ -251,11 +257,85 @@ export const airtimeTopupCtrl = async (req: Request, res: Response, next: NextFu
     }
 }
 
-export const getElectricBillersCtrl = async (req: Request, res: Response, next: NextFunction) => {
+// export const getElectricBillersCtrl = async (req: Request, res: Response, next: NextFunction) => {
+//     try {
+//         const accessToken = req.body.psbVas.vasAccessToken;
+
+//         let billerId = "1";
+
+//         const categoriesResponse = (await axios.get(
+//             `${psbVasEndpoint}/billspayment/categories`, 
+//             {
+//                 headers: {
+//                     Authorization: `Bearer ${accessToken}`
+//                 }
+//             }
+//         )).data;
+
+//         if (categoriesResponse.data.length && categoriesResponse.responseCode == "200" ) {
+//             // Search through the array for an item that includes 'electric' in its name
+//             const foundItem = categoriesResponse.data.find((item: { id: string; name: string; }) => item.name.toLowerCase().includes('electric'));
+//             if (foundItem) billerId = foundItem.id;
+//         }
+
+//         const response = (await axios.get(
+//             `${psbVasEndpoint}/billspayment/billers/${billerId}`, 
+//             {
+//                 headers: {
+//                     Authorization: `Bearer ${accessToken}`
+//                 }
+//             }
+//         )).data;
+
+//         // console.log(response); 
+
+//         if (response.data.length && response.responseCode == "200" ) {
+//             return res.status(201).json({
+//                 status: true,
+//                 statusCode: 201,
+//                 result: response.data,
+//                 message: response.message || 'Successfull'
+//             });
+//         }
+
+//         return res.status(400).json({
+//             status: false,
+//             statusCode: 400,
+//             message: response.message || 'Error getting electricity billers.',
+//         });
+        
+//     } catch (error: any) {
+//         if (!error.statusCode) {
+//             error.statusCode = 500;
+//         }
+//         next(error);
+//     }
+// }
+
+export const getBillersCtrl = async (req: Request, res: Response, next: NextFunction) => {
     try {
         const accessToken = req.body.psbVas.vasAccessToken;
+        const biller = req.query.biller;
 
+        let searchName = '';
         let billerId = "1";
+
+        if (biller == "electricity") {
+            billerId = "1";
+            searchName = 'electric'
+        } else if (biller == "Betting") {
+            billerId = "2";
+            searchName = 'bett'
+        } else if (biller == "TV") {
+            billerId = "4";
+            searchName = 'TV'
+        } else if (biller == "Exams") {
+            billerId = "3";
+            searchName = 'Exams'
+        } else if (biller == "Internet") {
+            billerId = "7";
+            searchName = 'Internet'
+        }
 
         const categoriesResponse = (await axios.get(
             `${psbVasEndpoint}/billspayment/categories`, 
@@ -268,7 +348,7 @@ export const getElectricBillersCtrl = async (req: Request, res: Response, next: 
 
         if (categoriesResponse.data.length && categoriesResponse.responseCode == "200" ) {
             // Search through the array for an item that includes 'electric' in its name
-            const foundItem = categoriesResponse.data.find((item: { id: string; name: string; }) => item.name.toLowerCase().includes('electric'));
+            const foundItem = categoriesResponse.data.find((item: { id: string; name: string; }) => item.name.toLowerCase().includes(searchName));
             if (foundItem) billerId = foundItem.id;
         }
 
@@ -295,7 +375,7 @@ export const getElectricBillersCtrl = async (req: Request, res: Response, next: 
         return res.status(400).json({
             status: false,
             statusCode: 400,
-            message: response.message || 'Error getting electricity billers.',
+            message: response.message || 'Error getting biller data.',
         });
         
     } catch (error: any) {
@@ -320,6 +400,8 @@ export const getBillerFieldsCtrl = async (req: Request, res: Response, next: Nex
             }
         )).data;
 
+        // console.log(response);
+        
 
         if (response.data.length && response.responseCode == "200" ) {
             return res.status(201).json({
@@ -345,7 +427,7 @@ export const getBillerFieldsCtrl = async (req: Request, res: Response, next: Nex
 }
 
 export const validateBillPaymentCtrl = async (req: Request, res: Response, next: NextFunction) => {
-    try {
+    try {        
         const accessToken = req.body.psbVas.vasAccessToken;
         
         const customerId = req.body.customerId;
@@ -353,10 +435,11 @@ export const validateBillPaymentCtrl = async (req: Request, res: Response, next:
         const itemId = req.body.itemId;
         const amount = req.body.amount || "";
         const customerPhone = req.body.customerPhone || "";
+        const email = req.body.email || "";
 
         const response = (await axios.post(
             `${psbVasEndpoint}/billspayment/validate`, 
-            { customerId, billerId, itemId, amount, customerPhone },
+            { customerId, billerId, itemId, amount, customerPhone, email },
             {
                 headers: {
                     Authorization: `Bearer ${accessToken}`
@@ -383,13 +466,23 @@ export const validateBillPaymentCtrl = async (req: Request, res: Response, next:
         
     } catch (error: any) {
         // console.log(error);
-        // const apiError = error.response.data || "";
-        // console.log(error.response.data);
-        
-        // error.message = apiError;
+        const apiError = error.response.data || "";
+        console.log(error.response.data);
+
+        if (apiError) {
+            if (apiError.message == 'Invalid Account number') {
+                error.message = 'Invalid meter number';
+            } else {
+                error.message = apiError.message || '';
+            }
+        }
         
         if (!error.statusCode) {
-            error.statusCode = 500;
+            if (apiError.responseCode) {
+                error.statusCode = Number(apiError.responseCode);
+            } else {
+                error.statusCode = 500;
+            }
         }
         next(error);
     }
@@ -408,7 +501,8 @@ export const initiateBillsPaymentCtrl = async (req: Request, res: Response, next
         const customerId = req.body.customerId;
         const billerId = req.body.billerId;
         const billerName = req.body.billerName;
-        const itemId = req.body.itemId;
+        const itemId = req.body.itemId || '';
+        const itemName = req.body.itemName || '';
         const amount = req.body.amount;
         const customerPhone = req.body.customerPhone;
         const customerName = req.body.customerName;
@@ -440,19 +534,30 @@ export const initiateBillsPaymentCtrl = async (req: Request, res: Response, next
                 }
             }
         )).data;
+        console.log(response);
+
+        if (response.status == 'failed' || response.responseCode == '400') {
+            let message = '';
+            if (response.message.toLowerCase().includes("invalid")) {
+                message = 'Invalid sent data';
+            }
+
+            return res.status(400).json({
+                status: false,
+                statusCode: 400,
+                message: message || response.message || 'Error, unable to make payment.',
+            });
+        }
 
         const statusResponse = await getBillspaymentTransactionStatus(transactionReference, accessToken);
         
-        let dbTransactionData: any = {};
+        let dbTransactionData: vasBillsTransactionInterface;
         if (transactionType == "electricity") {
-            // removes " amount, otherField, debitAccount, transactionReference "
-            // const { amount, otherField, debitAccount, 
-            //     transactionReference, ...newObject } = billsPaymentData;
-
             dbTransactionData = {
-                customerId, billerId, itemId, customerPhone, customerName,
-                billerName,
-                address: otherField,
+                customerId, customerPhone, customerName,
+                billerName, billerId, itemId, itemName,
+                otherField,
+                // address: otherField,
 
                 units: response.data.otherField || '',
                 token: response.data.token || '',
@@ -461,13 +566,53 @@ export const initiateBillsPaymentCtrl = async (req: Request, res: Response, next
                 // reference: response.data && response.responseCode == "200" ? response.data.transactionReference : '',
             }
         } else if (transactionType == "Betting") {
-        
+            dbTransactionData = {
+                customerId, billerId, customerPhone, customerName,
+                billerName, otherField,
+
+                isToken: response.data.isToken || '',
+            }
         } else if (transactionType == "TV") {
 
+            dbTransactionData = {
+                customerId, customerPhone, customerName,
+                billerName, billerId, itemId, itemName,
+                otherField,
+
+                // units: response.data.otherField || '',
+                // token: response.data.token || '',
+                isToken: response.data.isToken || '',
+
+                // reference: response.data && response.responseCode == "200" ? response.data.transactionReference : '',
+            }
         } else if (transactionType == "Exams") {
 
+            dbTransactionData = {
+                customerId, customerPhone, customerName,
+                billerName, billerId, itemId, itemName,
+                otherField, // 'Serial No: 005046300 1725966473'
+
+                // units: response.data.otherField || '',
+                token: response.data.token || '', // 'Pin: 54369682317259321'
+                isToken: response.data.isToken || '',
+
+                // reference: response.data && response.responseCode == "200" ? response.data.transactionReference : '',
+            }
         } else if (transactionType == "Internet") {
             
+            dbTransactionData = {
+                customerId, customerPhone, customerName,
+                billerName, billerId, itemId, itemName,
+                otherField,
+
+                // units: response.data.otherField || '',
+                token: response.data.token || '',
+                isToken: response.data.isToken || '',
+                // reference: response.data && response.responseCode == "200" ? response.data.transactionReference : '',
+            }
+        } else {
+            const anydata: any = {}
+            dbTransactionData = anydata;
         }
 
         const transactionDetails: transactionsInterface = {
@@ -475,9 +620,11 @@ export const initiateBillsPaymentCtrl = async (req: Request, res: Response, next
             userEmail: email,
             category: "VAS",
             type: transactionType,
-            data: dbTransactionData,
+            data: {
+                bills: dbTransactionData
+            },
             accountNo: debitAccount,
-            amount: amount,
+            amount: Number(amount),
             transactionReference: transactionReference,
             // reference: response.data && response.responseCode == "200" ? response.data.transactionReference : '',
             status: statusResponse.state ? statusResponse.status : response.status || "pending",
@@ -497,7 +644,10 @@ export const initiateBillsPaymentCtrl = async (req: Request, res: Response, next
             return res.status(201).json({
                 status: true,
                 statusCode: 201,
-                result: response.data,
+                result: {
+                    ...response.data,
+                    transactions: result,
+                },
                 message: response.message || 'Successfull'
             });
         }
@@ -509,9 +659,28 @@ export const initiateBillsPaymentCtrl = async (req: Request, res: Response, next
         });
         
     } catch (error: any) {
-        if (!error.statusCode) {
-            error.statusCode = 500;
+        const apiError = error.response.data || "";
+        // console.log(apiError);
+
+        if (apiError) {
+            if (apiError.message.toLowerCase().includes("invalid")) {
+                error.message = 'Invalid sent data';
+            } else {
+                error.message = apiError.message || '';
+            }
         }
+        
+        if (!error.statusCode) {
+            if (apiError.responseCode) {
+                error.statusCode = Number(apiError.responseCode);
+            } else {
+                error.statusCode = 500;
+            }
+        }
+
+        // if (!error.statusCode) {
+        //     error.statusCode = 500;
+        // }
         next(error);
     }
 }

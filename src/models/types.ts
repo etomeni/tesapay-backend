@@ -177,12 +177,17 @@ export interface transactionsInterface {
   category: "VAS" | "WAAS",
   type: "credit" | "debit" | "airtime" | "data" | "electricity" | "Betting" | "TV" | "Exams" | "Internet",
 
-  data: electricityTransactionInterface | airtimeTransactionInterface | 
-        dataTransactionInterface | creditTransactionInterface,
+  // data: vasBillsTransactionInterface | airtimeTransactionInterface | 
+  //       dataTransactionInterface | creditTransactionInterface,
 
+  data: {
+    bills?: vasBillsTransactionInterface,
+    topup?: topupTransactionInterface,
+    credit?: creditTransactionInterface,
+  },
 
   accountNo: string,
-  amount: string,
+  amount: number,
   transactionReference: string,
   status: string,
 
@@ -203,35 +208,46 @@ export interface creditTransactionInterface {
   reference?: string,
 }
 
-export interface dataTransactionInterface {
+export interface topupTransactionInterface {
   phoneNumber: string,
   network: string,
-  productId: string,
+  productId?: string,
 
   // this is for the result of the transaction
-  dataPlan: string
+  dataPlan?: string,
   reference: string
 }
 
-export interface airtimeTransactionInterface {
-  phoneNumber: string,
-  network: string,
-  // this is for the result of the transaction
-  reference: string
-}
+// export interface dataTransactionInterface {
+//   phoneNumber: string,
+//   network: string,
+//   productId: string,
 
-export interface electricityTransactionInterface {
+//   // this is for the result of the transaction
+//   dataPlan: string
+//   reference: string
+// }
+
+// export interface airtimeTransactionInterface {
+//   phoneNumber: string,
+//   network: string,
+//   // this is for the result of the transaction
+//   reference: string
+// }
+
+export interface vasBillsTransactionInterface {
   customerId: string;
-  // meterNumber: string,
+  otherField: string,
   billerName: string, 
   billerId: string,
-  itemId: string, 
+  itemId?: string, 
+  itemName?: string, 
 
   customerPhone: string, 
   customerName: string, 
-  address: string,
-  units: string,
-  token: string,
+  // address?: string,
+  units?: string,
+  token?: string,
   isToken: string,
   reference?: string
 }
