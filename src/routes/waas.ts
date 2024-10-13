@@ -12,7 +12,11 @@ import { getWaasAuthToken } from '@/middleware/psbAuth.js';
 import { 
     openWalletCtrl,
     getWalletDetailsCtrl,
-    getTranactionsCtrl
+    getTranactionsCtrl,
+    getBanksCtrl,
+    banksEnquiryCtrl,
+    ngnTransfer2OtherBanksCtrl,
+    searchUserAccountCtrl
 } from '../controllers/waasController.js';
 
 const router = express.Router();
@@ -45,6 +49,42 @@ router.get(
         getWaasAuthToken
     ],
     getTranactionsCtrl
+);
+
+router.get(
+    "/getBanks",
+    [
+        authMiddleware,
+        getWaasAuthToken
+    ],
+    getBanksCtrl
+);
+
+router.post(
+    "/banksEnquiry",
+    [
+        authMiddleware,
+        getWaasAuthToken
+    ],
+    banksEnquiryCtrl
+);
+
+router.post(
+    "/ngnTransferToOtherBanks",
+    [
+        authMiddleware,
+        getWaasAuthToken
+    ],
+    ngnTransfer2OtherBanksCtrl
+);
+
+router.get(
+    "/searchUserAccount",
+    [
+        authMiddleware,
+        getWaasAuthToken
+    ],
+    searchUserAccountCtrl
 );
 
 export default router;

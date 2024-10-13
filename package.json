@@ -9,7 +9,7 @@
     "start": "npm run dev",
     "dev": "nodemon -x tsx -e ts ./src/index.ts",
     "start:dev": "node --watch ./dist/index.js",
-    "build": "tsc --build",
+    "build": "tsc && tsc-alias && cp -r ./src/emailTemplates ./dist/emailTemplates",
     "prod": "node ./dist/index.js",
     "deploy": "NODE_ENV=production node ./dist/index.js"
   },
@@ -33,6 +33,7 @@
     "dotenv": "^16.4.5",
     "express": "^4.19.2",
     "express-fileupload": "^1.5.0",
+    "express-rate-limit": "^7.4.0",
     "express-validator": "^7.0.1",
     "helmet": "^7.1.0",
     "jsonwebtoken": "^9.0.2",
@@ -55,6 +56,7 @@
     "@types/validator": "^13.11.9",
     "nodemon": "^3.1.0",
     "ts-node": "^10.9.2",
+    "tsc-alias": "^1.8.10",
     "tsx": "^4.8.2",
     "typescript": "^5.4.5"
   }

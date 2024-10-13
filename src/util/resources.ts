@@ -56,3 +56,11 @@ export function maskEmailAddress(email: string) {
   
     return maskedEmail;
 }
+
+
+export function isNumeric(str: string) {
+    // Use regular expression to check if the string contains only digits
+    const regex = /^\d+$/;
+    return regex.test(str);
+    // This test will return false if it contains a decimal point
+}

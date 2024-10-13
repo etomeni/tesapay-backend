@@ -13,8 +13,8 @@ import nodemailer from 'nodemailer';
 import { userModel } from '../models/users.model.js';
 import { getSampleNetworkNumber, psbVasEndpoint } from "@/util/resources.js";
 import axios from "axios";
-import { transactionsInterface, vasBillsTransactionInterface } from "@/models/types.js";
 import { transactionModel } from "@/models/transactions.model.js";
+import { transactionsInterface, vasBillsTransactionInterface } from "@/typeInterfaces/transactions.js";
 
 
 // const secretForToken = process.env.JWT_SECRET;

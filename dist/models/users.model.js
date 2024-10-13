@@ -1,14 +1,6 @@
 // import mongoose, { model, Schema, SchemaTypes,  } from 'mongoose';
 import mongoose, { Schema } from 'mongoose';
 import validator from 'validator';
-const accountSchema = new Schema({
-    currency: String,
-    balance: Number,
-    accountNumber: String,
-    accountName: String,
-    bank: String,
-    default: Boolean,
-});
 const addressSchema = new Schema({
     ip: String,
     street: String,
@@ -69,11 +61,11 @@ const userSchema = new Schema({
     phoneNumber: {
         type: String,
         required: [true, "Please enter the user Phone number."],
-        // unique: true,
-        validate: {
-            validator: (v) => validator.isMobilePhone(v),
-            message: ({ value }) => `${value} is not a phone number.`,
-        },
+        unique: true,
+        // validate: {
+        //     validator: (v: string) => validator.isMobilePhone(v),
+        //     message: ({ value }) => `${value} is not a valid phone number.`,
+        // },
     },
     country: {
         type: String,
@@ -83,7 +75,7 @@ const userSchema = new Schema({
         type: Boolean,
         required: true,
         // enum: [true, false],
-        default: false
+        default: true
     },
     password: {
         type: String,
@@ -105,16 +97,16 @@ const userSchema = new Schema({
         type: Number,
         required: false
     },
-    account: {
-        type: [accountSchema],
-        required: false
-    },
+    // account: {
+    //     type: [accountSchema],
+    //     required: false
+    // },
     NIN: {
-        type: Number,
+        type: Object,
         required: false
     },
     BVN: {
-        type: Number,
+        type: Object,
         required: false
     },
     address: {
@@ -149,5 +141,14 @@ const userSchema = new Schema({
         type: String,
         required: false
     },
+    isDeleted: {
+        type: Boolean,
+        required: false,
+        default: false
+    },
+    lastLogin: {
+        type: Date,
+        required: false
+    }
 }, { timestamps: true });
 export const userModel = mongoose.model("User", userSchema);

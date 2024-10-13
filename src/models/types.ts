@@ -15,6 +15,7 @@ export type signupInterface = {
 };
 
 export type userInterface = {
+  _id?: string;
   userId: string;
   firstName: string;
   middleName?: string;
@@ -54,6 +55,7 @@ export type userInterface = {
 
 export type accountInterface = {
   userId: string,
+  username: string,
   userEmail: string,
   // transactionTrackingRef: "tesapay/waas/66a52e3ba0efbcdba1514ecf",
   lastName: string,
@@ -167,118 +169,4 @@ export interface IpApiResponse {
   org: string;
   as: string;
   query: string;
-}
-
-
-export interface transactionsInterface {
-  _id?: string,
-  user_id: string,
-  userEmail: string,
-  category: "VAS" | "WAAS",
-  type: "credit" | "debit" | "airtime" | "data" | "electricity" | "Betting" | "TV" | "Exams" | "Internet",
-
-  // data: vasBillsTransactionInterface | airtimeTransactionInterface | 
-  //       dataTransactionInterface | creditTransactionInterface,
-
-  data: {
-    bills?: vasBillsTransactionInterface,
-    topup?: topupTransactionInterface,
-    credit?: creditTransactionInterface,
-  },
-
-  accountNo: string,
-  amount: number,
-  transactionReference: string,
-  status: string,
-
-  createdAt?: string;
-  updatedAt?: string;
-}
-
-export interface creditTransactionInterface {
-  accountNo: string,
-  // totalAmount: number,
-  transactionId: string,
-  narration: string,
-  merchantFeeAccount?: string,
-  merchantFeeAmount?: string,
-  transactionType: string,
-
-  // this is for the result of the transaction
-  reference?: string,
-}
-
-export interface topupTransactionInterface {
-  phoneNumber: string,
-  network: string,
-  productId?: string,
-
-  // this is for the result of the transaction
-  dataPlan?: string,
-  reference: string
-}
-
-// export interface dataTransactionInterface {
-//   phoneNumber: string,
-//   network: string,
-//   productId: string,
-
-//   // this is for the result of the transaction
-//   dataPlan: string
-//   reference: string
-// }
-
-// export interface airtimeTransactionInterface {
-//   phoneNumber: string,
-//   network: string,
-//   // this is for the result of the transaction
-//   reference: string
-// }
-
-export interface vasBillsTransactionInterface {
-  customerId: string;
-  otherField: string,
-  billerName: string, 
-  billerId: string,
-  itemId?: string, 
-  itemName?: string, 
-
-  customerPhone: string, 
-  customerName: string, 
-  // address?: string,
-  units?: string,
-  token?: string,
-  isToken: string,
-  reference?: string
-}
-
-
-
-export enum conditionType {
-  "!=" = "!=",
-  "<" = "<",
-  "<=" = "<=",
-  "==" = "==",
-  ">" = ">",
-  ">=" = ">=",
-  "array-contains" = "array-contains",
-  "array-contains-any" = "array-contains-any",
-  "in" = "in",
-  "not-in" = "not-in",
-}
-
-export interface whereCondition {
-  property: string;
-  condition:
-    | "!="
-    | "<"
-    | "<="
-    | "=="
-    | ">"
-    | ">="
-    | "array-contains"
-    | "array-contains-any"
-    | "in"
-    | "not-in";
-  value: string | number | boolean;
 }

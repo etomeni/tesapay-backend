@@ -1,8 +1,7 @@
 // import mongoose, { model, Schema, SchemaTypes,  } from 'mongoose';
+import { transactionsInterface } from '@/typeInterfaces/transactions.js';
 import mongoose, { Schema } from 'mongoose';
 // import validator from 'validator';
-import { transactionsInterface } from './types.js';
-
 
 const transactionSchema = new Schema<transactionsInterface>(
     {

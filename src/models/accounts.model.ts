@@ -10,6 +10,15 @@ const accountSchema = new Schema<accountInterface>(
             type: String,
             required: [true, "Please enter user id."],
             unique: true,
+            index: true
+        },
+        username: {
+            type: String,
+            required: [true, "Please enter the user username."],
+            
+            unique: true,
+            lowercase: true,
+            index: true
         },
         userEmail: {
             type: String,
@@ -33,7 +42,8 @@ const accountSchema = new Schema<accountInterface>(
         },
         phoneNo: {
             type: String,
-            required: [true, "phoneNo is required."]
+            required: [true, "phoneNo is required."],
+            // index: true
         },
         gender: {
             type: Number,
@@ -58,7 +68,8 @@ const accountSchema = new Schema<accountInterface>(
 
         bvn: {
             type: String,
-            required: [true, "bvn is required."]
+            required: [true, "bvn is required."],
+            // index: true
         },
         walletType: {
             type: String,
@@ -70,7 +81,8 @@ const accountSchema = new Schema<accountInterface>(
         },
         accountNumber: {
             type: String,
-            required: [true, "account number is required."]
+            required: [true, "account number is required."],
+            index: true
         },
         accountName: {
             type: String,
@@ -140,5 +152,7 @@ const accountSchema = new Schema<accountInterface>(
     },
     { timestamps: true }
 );
+
+accountSchema.index({ username: 'text', accountNumber: 'text' });
 
 export const accountModel = mongoose.model("Account", accountSchema);

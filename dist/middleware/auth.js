@@ -23,25 +23,24 @@ export default async (req, res, next) => {
             error.message = "wrong authentication token";
             return res.status(500).json({
                 message: error.message,
+                status: false,
                 statusCode: error.statusCode,
                 error
             });
         }
         if (!decodedToken) {
-            const error = new Error("Not authenticated!");
-            // error.statusCode = 401;
-            error.message = "Not authenticated! unable to verify user authtentication token.";
             return res.status(401).json({
-                message: error.message,
+                message: "Not authenticated! unable to verify user authtentication token.",
+                status: false,
                 statusCode: 401,
-                error
             });
         }
         req.body.middlewareParam = {
             isLoggedin: true,
             userId: decodedToken.userId,
             email: decodedToken.email,
-            username: decodedToken.username
+            username: decodedToken.username,
+            _id: decodedToken._id
         };
         // req.isLoggedin = true;
         // req.userId = decodedToken.userId;
