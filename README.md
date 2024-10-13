@@ -1,3 +1,6 @@
+# TesaPay
+Welcome to simplified payments
+
 ## .env file content required
 This values are required in .env file to run this application.
 

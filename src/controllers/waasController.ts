@@ -132,7 +132,7 @@ export const getWalletDetailsCtrl = async (req: Request, res: Response, next: Ne
 
         // const accountNumber = req.body.accountNumber;
 
-        const accountDetails = await accountModel.findOne({ userId: _id });
+        const accountDetails = await accountModel.findOne({ userId: _id }).exec();
         if (!accountDetails?.accountNumber) {
             return res.status(500).json({
                 status: false,
@@ -141,6 +141,8 @@ export const getWalletDetailsCtrl = async (req: Request, res: Response, next: Ne
             });
         };
 
+        // console.log(accountDetails);
+        
         const accessToken = req.body.psbWaas.waasAccessToken;
         const response = (await axios.post(
             `${psbWaasEndpoint}/wallet_enquiry`, 
@@ -152,7 +154,7 @@ export const getWalletDetailsCtrl = async (req: Request, res: Response, next: Ne
             }
         )).data;
 
-        // console.log(response); 
+        console.log(response); 
 
         if (response.data && response.data.responseCode == "00" ) {
             const updateData = {
@@ -180,12 +182,22 @@ export const getWalletDetailsCtrl = async (req: Request, res: Response, next: Ne
             const updatedRecord = await accountModel.findOneAndUpdate(
                 { userId: _id }, updateData,
             );
+            // if it fails to update our database record with our provider (9PSB) data
             if (!updatedRecord?._id) {
-                return res.status(500).json({
-                    status: false,
-                    statusCode: 500,
-                    message: 'unable to get user account record.',
+                // return the last updated record from our database and override it
+                // with data gotten from our provider
+                return res.status(202).json({
+                    status: true,
+                    statusCode: 202,
+                    result: { ...accountDetails, ...updateData },
+                    message: response.message || 'Successfull'
                 });
+
+                // return res.status(500).json({
+                //     status: false,
+                //     statusCode: 500,
+                //     message: 'unable to get user account record.',
+                // });
             }
 
             return res.status(201).json({
@@ -196,13 +208,24 @@ export const getWalletDetailsCtrl = async (req: Request, res: Response, next: Ne
             });
         }
 
-        return res.status(500).json({
-            status: false,
-            statusCode: 500,
-            message: response.message || 'unable to get user account record.',
+        // if it fails to get the data from our provider (9PSB) use 
+        // return the last updated record from our database
+        return res.status(202).json({
+            status: true,
+            statusCode: 202,
+            result: accountDetails,
+            message: response.message || 'Successfull'
         });
+
+        // return res.status(500).json({
+        //     status: false,
+        //     statusCode: 500,
+        //     message: response.message || 'unable to get user account record.',
+        // });
         
     } catch (error: any) {
+        console.log(error);
+        
         if (!error.statusCode) {
             error.statusCode = 500;
         }
@@ -255,6 +278,8 @@ export const getTranactionsCtrl = async (req: Request, res: Response, next: Next
         });
 
     } catch (error: any) {
+        console.log(error);
+        
         if (!error.statusCode) {
             error.statusCode = 500;
         }
@@ -306,6 +331,8 @@ export const getBanksCtrl = async (req: Request, res: Response, next: NextFuncti
 
 export const banksEnquiryCtrl = async (req: Request, res: Response, next: NextFunction) => {
     try {
+        console.log("hello");
+        
         // const user_email = req.body.middlewareParam.email;
         // const userId = req.body.middlewareParam.userId;
         // const _id = req.body.middlewareParam._id;
@@ -360,6 +387,8 @@ export const banksEnquiryCtrl = async (req: Request, res: Response, next: NextFu
         });
 
     } catch (error: any) {
+        console.log(error);
+        
         if (!error.statusCode) {
             error.statusCode = 500;
         }
