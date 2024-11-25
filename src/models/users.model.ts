@@ -1,37 +1,17 @@
-// import mongoose, { model, Schema, SchemaTypes,  } from 'mongoose';
 import mongoose, { Schema } from 'mongoose';
+// import mongoose, { model, Schema, SchemaTypes,  } from 'mongoose';
 import validator from 'validator';
-import { userInterface } from './types.js';
-
-
-const addressSchema = new Schema({
-    ip: String,
-    street: String,
-    city: String,
-    region: String,
-    country: String,
-});
-
-const locationSchema = new Schema({
-    ip: String,
-    lastUsedIps: [String],
-    street: String,
-    city: String,
-    region: String,
-    country: String,
-    isp: String,
-    lat: Number,
-    lon: Number,
-});
+import { userInterface } from '@/typeInterfaces/userInterface.js';
+// import { userInterface } from './types.js';
 
 
 const userSchema = new Schema<userInterface>(
     {
-        userId: {
-            type: String,
-            required: [true, "Please enter user id."],
-            unique: true,
-        },
+        // userId: {
+        //     type: String,
+        //     required: [true, "Please enter user id."],
+        //     unique: true,
+        // },
         role: { 
             type: String, 
             enum: ['user', 'admin'], 
@@ -63,13 +43,13 @@ const userSchema = new Schema<userInterface>(
             unique: true,
             lowercase: true,
             validate: {
-              validator: (v: string) => validator.isEmail(v),
-              message: ({ value }) => `${value} is not a valid email`,
+                validator: (v: string) => validator.isEmail(v),
+                message: ({ value }) => `${value} is not a valid email`,
             },
         },
         phoneNumber: {
             type: String,
-            required: [true, "Please enter the user Phone number."],
+            required: [true, "Please enter a valid phone number."],
             unique: true,
 
             // validate: {
@@ -79,18 +59,11 @@ const userSchema = new Schema<userInterface>(
         },
         country: {
             type: String,
-            required: [true, "Please enter the user country."]
+            required: true
         },
-        status: {
-            type: Boolean,
-            required: true,
-            // enum: [true, false],
-            default: true
-        },
-
         password: {
             type: String,
-            required: [true, "User password required."]
+            required: true
         },
         dob: {
             type: String,
@@ -100,66 +73,49 @@ const userSchema = new Schema<userInterface>(
             type: String,
             required: true
         },
-        location: {
-            type: locationSchema,
-            required: true
-        },
-        pin: {
-            type: Number,
-            required: false
-        },
         // account: {
         //     type: [accountSchema],
         //     required: false
         // },
-        NIN: {
-            type: Object,
-            required: false
+
+        bvnNumber: {
+            type: String,
+            required: true,
         },
-        BVN: {
-            type: Object,
-            required: false
+
+        verification_id: {
+            type: String,
+            // required: true
         },
-        address: {
-            type: addressSchema,
-            required: false
+
+        isBvnPhoneNoVerified: {
+            type: Boolean,
+            // required: false,
+            default: false
         },
-        idImage: {
+        pin: {
             type: String,
             required: false
         },
-        isAddressVerified: {
-            type: Boolean,
-            required: false,
-        },
-        isBVNverified: {
-            type: Boolean,
-            required: false
-        },
-        isEmailVerified: {
-            type: Boolean,
-            required: false
-        },
-        isNINverified: {
-            type: Boolean,
-            required: false
-        },
-        isPhoneNumberVerified: {
-            type: Boolean,
-            required: false
+        location: {
+            type: Object,
+            required: true
         },
         referredBy: {
             type: String,
+            lowercase: true,
             required: false
         },
-        isDeleted: {
+        status: {
             type: Boolean,
-            required: false,
-            default: false
+            required: true,
+            // enum: [true, false],
+            default: true
         },
-        lastLogin: {
-            type: Date,
-            required: false
+        isAccountDeleted: {
+            type: Boolean,
+            // required: false,
+            default: false
         }
     },
     { timestamps: true }

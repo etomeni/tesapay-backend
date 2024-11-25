@@ -3,42 +3,67 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>TesaPay - Email Verification</title>
+    <title>Verify Your Email - TesaPay</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            background-color: #f9f9f9;
+            margin: 0;
+            padding: 0;
+        }
+        .container {
+            max-width: 600px;
+            margin: 20px auto;
+            background: #ffffff;
+            border-radius: 8px;
+            box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+            overflow: hidden;
+        }
+        .header {
+            background-color: #de2341;
+            color: #ffffff;
+            text-align: center;
+            padding: 20px;
+        }
+        .content {
+            padding: 20px;
+        }
+        .content p {
+            color: #555555;
+            line-height: 1.6;
+        }
+        .verification-code {
+            font-size: 24px;
+            color: #de2341;
+            text-align: center;
+            margin: 20px 0;
+        }
+        .footer {
+            text-align: center;
+            font-size: 14px;
+            color: #888888;
+            padding: 10px;
+            background-color: #f5f5f5;
+        }
+    </style>
 </head>
 <body>
-
-    <p style="text-align: center;">
-        <span style="font-size: 18pt; color: #de2341;">
-            <strong>Email Verification</strong>
-        </span>
-    </p>
-
-    <p>&nbsp;</p>
-    <p>Hi, {{name}}</p>
-
-    <p>
-        Please use this code below to verify your email address.
-    </p>
-    <p style="padding: 12px; border-left: 4px solid #d0d0d0; font-style: italic;">
-        <strong style="font-size: xx-large;"> {{code}} </strong>
-    </p>
-
-    <p>&nbsp;</p>
-
-    <p>
-        Thanks for choosing 
-        <span style="color: #de2341;">TesaPay</span>.
-    </p>
-
-    <p>&nbsp;</p>
-
-    <p>
-        <em>Best wishes,</em>
-        <br>
-        <strong>
-            <span style="color: #de2341;">TesaPay</span>
-        </strong>
-    </p>
-
+    <div class="container">
+        <div class="header">
+            <h1>TesaPay</h1>
+        </div>
+        <div class="content">
+            <h2>Email Verification</h2>
+            <p>Hello,</p>
+            <p>Thank you for signing up for TesaPay! Please verify your email address to complete your registration. Use the verification code below:</p>
+            <div class="verification-code">{{code}}</div>
+            <p>If you didn't request this, please ignore this email.</p>
+            <p>Best regards,</p>
+            <p>The TesaPay Team</p>
+        </div>
+        <div class="footer">
+            &copy; {{year}} TesaPay. All rights reserved.
+        </div>
+    </div>
 </body>
 </html>

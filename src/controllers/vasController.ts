@@ -1,13 +1,4 @@
-import fs from "fs";
 import { Request, Response, NextFunction } from "express-serve-static-core";
-import bcryptjs from "bcryptjs";
-import { validationResult } from "express-validator";
-import { v4 as uuidv4 } from 'uuid';
-import Jwt from "jsonwebtoken";
-// import axios from "axios";
-import nodemailer from 'nodemailer';
-
-// import path from "path";
 
 // models
 import { userModel } from '../models/users.model.js';
@@ -681,6 +672,71 @@ export const initiateBillsPaymentCtrl = async (req: Request, res: Response, next
         // if (!error.statusCode) {
         //     error.statusCode = 500;
         // }
+        next(error);
+    }
+}
+
+
+export const getUserReferralsCtrl = async (req: Request, res: Response, next: NextFunction) => {
+    try {
+        // const accessToken = req.body.psbVas.vasAccessToken;
+        // const _id = req.body.middlewareParam._id;
+        // const email = req.body.middlewareParam.email;
+        const username = req.body.middlewareParam.username;
+        // const userId = req.body.middlewareParam.userId;
+
+                
+        const page = Number(req.query.page);
+        const limit = Number(req.query.limit);
+        // Calculate the number of documents to skip
+        const skip = (page - 1) * limit;
+
+        const referrals = await userModel.find({ 
+            referredBy: { $regex: `^${username}`, $options: 'i' } 
+
+            // $or: [
+            //     // { username: { $regex: `^${searchWord}`, $options: 'i' } },
+            //     { referredBy: { $regex: `^${username}`, $options: 'i' } }
+            // ]
+        })
+        .sort({ createdAt: -1 })  // Sort by createdAt in descending order
+        .skip(skip) // Skip the number of documents
+        .limit(limit); // Limit the number of results
+        // .exec();
+
+        if (!referrals) {
+            return res.status(500).json({
+                status: false,
+                statusCode: 500,
+                message: "Unable to get referrals."
+            });
+        };
+
+        // Get the total number of documents
+        const totalDocuments = await userModel.countDocuments({ referredBy: { $regex: `^${username}`, $options: 'i' } });
+        
+        // Calculate total pages
+        const totalPages = Math.ceil(totalDocuments / limit);
+
+        return res.status(201).json({
+            status: true,
+            statusCode: 201,
+            result: {
+                data: referrals,
+                page,
+                totalPages,
+                totalDocuments
+            },
+            message: 'Successfull'
+        });
+        
+    } catch (error: any) {
+        const err = error.response && error.response.data ? error.response.data : error;
+        console.log(err);
+
+        if (!error.statusCode) error.statusCode = 500;
+        if (error.response && error.response.data.message) error.message = error.response.data.message;
+        
         next(error);
     }
 }

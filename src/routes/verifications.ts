@@ -1,16 +1,17 @@
 import express from 'express';
-import { body  } from 'express-validator';
+import { body, query  } from 'express-validator';
 import bodyParser from 'body-parser';
-// import Jwt  from "jsonwebtoken";
-// import { Request, Response, NextFunction } from "express-serve-static-core";
 
 const router = express.Router();
 
 // Models
-import { userModel } from '../models/users.model.js';
+// import { userModel } from '../models/users.model.js';
 
 // Controllers
 import { 
+    sendEmailVerificationMail,
+
+    
     verifyUserExist,
     verifyEmailExist,
     verifyUsernameExist,
@@ -20,19 +21,47 @@ import {
     verifyPhoneTokenCtr,
     resendEmailVerificationTokenCtr,
     sendPhoneVerificationTokenCtr,
-    verifyBvnNumberCtrl
+    verifyBvnNumberCtrl,
+    verifyBvnNumberUsingBlusaltCtrl
 } from '../controllers/verificationController.js';
 
 // middleWares
-import authMiddleware from '../middleware/auth.js'
+// import authMiddleware from '../middleware/auth.js'
 
 
 router.use(bodyParser.json());
 
 
-
+router.get(
+    "/verifyEmail",
+    [
+        query('email').trim()
+            .isEmail().withMessage('Please enter a valid email')
+            .normalizeEmail(),
+    ],
+    sendEmailVerificationMail
+);
 
 router.post(
+    "/verifyBvnNumber",
+    [
+        body('bvn')
+            .isString().notEmpty()
+            .withMessage('bvn number is required'),
+
+        body('email')
+            .isString().notEmpty()
+            .withMessage('Email address is required'),
+
+        body('phoneNumber')
+            .isString().notEmpty()
+            .withMessage('Phone number is required'),
+    ],
+    verifyBvnNumberUsingBlusaltCtrl
+);
+
+// this is no longer needed
+router.patch(
     "/verifyBvnNumber",
     verifyBvnNumberCtrl
 );
@@ -42,10 +71,6 @@ router.post(
     verifyUserExist
 );
 
-router.get(
-    "/verifyEmail",
-    verifyEmailExist
-);
 
 router.get(
     "/verifyUsername",
@@ -61,6 +86,11 @@ router.get(
 // verify sent email reset password token
 router.post(
     '/verifyEmailToken',
+    // [
+    //     body('email').trim()
+    //         .isEmail().withMessage('Please enter a valid email')
+    //         .normalizeEmail(),
+    // ],
     verifyEmailTokenCtr
 );
 

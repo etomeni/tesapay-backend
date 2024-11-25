@@ -38,6 +38,52 @@ import authMiddleware from './../../middleware/auth.js'
 
 router.use(bodyParser.json());
 
+
+
+
+const testbvn = {
+    status_code: 200,
+    status: 'Success',
+    message: 'BVN Verification Completed Successfully',
+    results: {
+        request_reference: 'yAH6CE934347031',
+        bvn_number: '22268421252',
+        name_on_card: 'OKAFOR PATRICK CHUKWUEMEKA',
+        enrolment_branch: 'OBAFEMI AWOLOWO WAY BRANCH',
+        enrolment_bank: 'OBAFEMI AWOLOWO WAY BRANCH',
+        formatted_registration_date: 'June 9, 2015',
+        level_of_account: 'Level 1 - Low Level Accounts',
+        nin: null,
+        watchlisted: 'NO',
+        verification_status: 'VERIFIED',
+        service_type: 'BVN Verification without Image',
+        personal_info: {
+            first_name: 'PATRICK',
+            middle_name: 'CHUKWUEMEKA',
+            last_name: 'OKAFOR',
+            full_name: 'PATRICK CHUKWUEMEKA OKAFOR',
+            email: 'patrick.e.okafor555@gmail.com',
+            gender: 'Male',
+            phone_number: '08028910856',
+            phone_number_2: null,
+            date_of_birth: '1963-11-04',
+            formatted_date_of_birth: 'November 4, 1963',
+            lga_of_origin: 'Njikoka',
+            state_of_origin: 'Anambra State',
+            nationality: null,
+            marital_status: 'Married'
+        },
+        residential_info: {
+            state_of_residence: 'Lagos State',
+            lga_of_residence: null,
+            residential_address: 'NO 10 DARAMOLA STREET,ISHERI,LAGOS'
+        }
+    }
+} 
+
+
+  
+
 // testing users endpoints
 router.get(
     '/',

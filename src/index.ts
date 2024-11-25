@@ -16,8 +16,11 @@ import verificationRoutes from './routes/verifications.js';
 import vasRoutes from './routes/vas.js';
 import waasRoutes from './routes/waas.js';
 import voucherRoutes from './routes/voucher.js';
+import adminRoutes from './routes/adminRoute.js';
+import savingsRoutes from './routes/savingsRoute.js';
 
 import { get404, get500 } from './controllers/error.js';
+import { activityLogCleanUpCronJob } from './util/activityLogFn.js';
 
 const limiter = rateLimit({
 	windowMs: 10 * 60 * 1000, // 15 minutes
@@ -25,9 +28,12 @@ const limiter = rateLimit({
 	// standardHeaders: 'draft-7', // draft-6: `RateLimit-*` headers; draft-7: combined `RateLimit` header
 	// legacyHeaders: false, // Disable the `X-RateLimit-*` headers.
 	// store: ... , // Redis, Memcached, etc. See below.
-    validate: false,
-    message: "Too many requests from this IP, please try again later",
 
+    standardHeaders: true, // Return rate limit info in the `RateLimit-*` headers
+	legacyHeaders: false, // Disable the `X-RateLimit-*` headers
+
+    // validate: false,
+    message: "Too many requests from this IP, please try again later",
 })
 
 
@@ -51,19 +57,23 @@ app.use('/api/v1/auth', authRoutes);
 app.use('/api/v1/verifications', verificationRoutes);
 app.use('/api/v1/vas', vasRoutes);
 app.use('/api/v1/waas', waasRoutes);
+app.use('/api/v1/waas/savings', savingsRoutes);
 app.use('/api/v1/voucher', voucherRoutes);
 // app.use('/api/v1/users', usersRoutes);
 // app.use('/api/admin', adminRoutes);
 app.use('/api/v1/uploads', express.static('uploads'));
+app.use('/api/v1/admin', adminRoutes);
 
-app.use(get404);
 app.use(get500);
+app.use(get404);
 
 const dbAccess = process.env.MONGO_DB_ACCESS_URI;
 
 if (dbAccess) {
     mongoose.connect(dbAccess)
     .then((res) => {
+        activityLogCleanUpCronJob();
+
         // console.log(res);
         app.listen(PORT, () => {
             console.log(`Server Running on port: http://localhost:${PORT}`);
@@ -76,4 +86,3 @@ if (dbAccess) {
         console.log(`Server Running on port: http://localhost:${PORT}`);
     })
 }
-

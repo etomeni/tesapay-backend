@@ -155,14 +155,17 @@ export const handleDebitTransactions = async (
             message: 'Successful'
         };
         
-    } catch (error) {
+    } catch (error: any) {
+        const err = error.response && error.response.data ? error.response.data : error;
+
         return {
             status: false,
             statusCode: 500,
             result: {
-                ref: ''
+                ref: '',
+                error: err
             },
-            message: 'server error',
+            message: err.message || 'server error',
         };
     }
 

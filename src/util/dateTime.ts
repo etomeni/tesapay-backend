@@ -67,3 +67,18 @@ export function chatTimeFormat(dateString: string) {
     return `${adjustedHours}:${minutes} ${meridian}`;
 }
   
+
+export const format9PsbDateOfBirth = (dob: string) => {
+    const date = new Date(dob);
+  
+    // Ensure the input is a valid date
+    // if (isNaN(date)) {
+    //   throw new Error('Invalid date provided');
+    // }
+  
+    const day = String(date.getDate()).padStart(2, '0'); // Add leading zero
+    const month = String(date.getMonth() + 1).padStart(2, '0'); // Months are 0-indexed
+    const year = date.getFullYear();
+  
+    return `${day}/${month}/${year}`;
+};

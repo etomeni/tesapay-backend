@@ -154,8 +154,6 @@ export const getWalletDetailsCtrl = async (req: Request, res: Response, next: Ne
             }
         )).data;
 
-        console.log(response); 
-
         if (response.data && response.data.responseCode == "00" ) {
             const updateData = {
                 accountNumber: response.data.nuban,
@@ -259,7 +257,7 @@ export const getTranactionsCtrl = async (req: Request, res: Response, next: Next
         };
 
         // Get the total number of documents
-        const totalDocuments = await transactionModel.countDocuments();
+        const totalDocuments = await transactionModel.countDocuments({ user_id: _id });
 
         // Calculate total pages
         const totalPages = Math.ceil(totalDocuments / limit);

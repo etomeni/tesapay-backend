@@ -1,5 +1,5 @@
 import express from 'express';
-import { body  } from 'express-validator';
+import { body, query  } from 'express-validator';
 import bodyParser from 'body-parser';
 // import Jwt  from "jsonwebtoken";
 // import { Request, Response, NextFunction } from "express-serve-static-core";
@@ -19,8 +19,10 @@ import {
     getBillerFieldsCtrl,
     validateBillPaymentCtrl,
     initiateBillsPaymentCtrl,
-    // getBetBillersCtrl
+    // getBetBillersCtrl,
+    getUserReferralsCtrl
 } from '../controllers/vasController.js';
+import routeValidationResult from '@/middleware/routeValidationResult.js';
 
 
 router.use(bodyParser.json());
@@ -92,6 +94,25 @@ router.post(
         getVasAuthToken
     ],
     initiateBillsPaymentCtrl
+);
+
+// getReferrals
+router.get(
+    "/getReferrals",
+    [
+        query('page')
+            .isNumeric().notEmpty()
+            .withMessage('Page number is required.'),
+            
+        query('limit')
+            .isNumeric().notEmpty()
+            .withMessage('Limit is required.'),
+
+        routeValidationResult,
+        authMiddleware,
+        // getVasAuthToken
+    ],
+    getUserReferralsCtrl
 );
 
 

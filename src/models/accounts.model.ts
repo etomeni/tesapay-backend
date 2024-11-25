@@ -108,7 +108,7 @@ const accountSchema = new Schema<accountInterface>(
             },
             number: {
                 type: String,
-                required: true
+                // required: true
             },
             pndstatus: {
                 type: String,
@@ -120,7 +120,7 @@ const accountSchema = new Schema<accountInterface>(
             },
             productCode: {
                 type: String,
-                required: true
+                // required: true
             },
             lienStatus: {
                 type: String,

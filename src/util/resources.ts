@@ -64,3 +64,23 @@ export function isNumeric(str: string) {
     return regex.test(str);
     // This test will return false if it contains a decimal point
 }
+
+export function normalizePhoneNumber(phoneString: string) {
+    // Step 1: Remove all non-numeric characters
+    let cleaned = phoneString.replace(/\D/g, '');
+  
+    // Step 2: Handle cases where the number starts with '234' or '2340'
+    if (cleaned.startsWith('2340')) {
+        cleaned = cleaned.replace('2340', '0');
+    } else if (cleaned.startsWith('234')) {
+        cleaned = cleaned.replace('234', '0');
+    }
+  
+    // Step 3: Ensure the number starts with '0'
+    if (!cleaned.startsWith('0')) {
+        cleaned = '0' + cleaned;
+    }
+  
+    // Step 4: Ensure the result is 11 digits
+    return cleaned.length === 11 ? cleaned : cleaned.slice(0, 11);
+}
