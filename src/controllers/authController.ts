@@ -195,7 +195,7 @@ export const sendPhoneVerificationTokenCtr = async (req: Request, res: Response,
         }
         const response = (await axios.post(`${termiSendSmsEndpoint}`, msg2send)).data;
 
-        // console.log(response);
+        console.log(response);
 
         if (!response.message_id) {
             return res.status(500).json({
@@ -219,6 +219,7 @@ export const sendPhoneVerificationTokenCtr = async (req: Request, res: Response,
 
     } catch (error: any) {
         const err = error.response && error.response.data ? error.response.data : error;
+        console.log(err);
 
         if (!error.statusCode) error.statusCode = 500;
         next(err);
