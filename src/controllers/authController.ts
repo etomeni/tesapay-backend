@@ -166,17 +166,17 @@ export const sendPhoneVerificationTokenCtr = async (req: Request, res: Response,
         );
 
         console.log(code);
-        // // TO BE DELETED: This is temporary for testing only
-        // return res.status(201).json({
-        //     status: true,
-        //     statusCode: 201,
-        //     result: {
-        //         jwt_token: jwt_token,
-        //         messageId: "response.message_id",
-        //         code: code
-        //     },
-        //     message: `Verification code sent to ${maskPhoneNumber(phoneNumber)}. Enter the code to verify.`,
-        // });
+        // TO BE DELETED: This is temporary for testing only
+        return res.status(201).json({
+            status: true,
+            statusCode: 201,
+            result: {
+                jwt_token: jwt_token,
+                messageId: "response.message_id",
+                code: code
+            },
+            message: `Verification code sent to ${maskPhoneNumber(phoneNumber)}. Enter the code to verify.`,
+        });
 
 
         // Remove any non-digit characters from the input
